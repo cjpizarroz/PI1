@@ -48,7 +48,7 @@ fastapi==0.103.2
 fastjsonschema==2.17.1
 filelock==3.12.2
 flatbuffers==23.5.26
-fonttools==4.42.0
+fonttools==4.38.0
 fqdn==1.5.1
 freezegun==1.2.2
 frozenlist==1.4.0
