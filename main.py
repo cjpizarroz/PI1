@@ -20,7 +20,7 @@ def query_data(id):
     desarrollador = id
     #'Poolians.com'
     columns = ['release_date','item_id', 'developer','genres_Free to Play']
-    df = pd.read_csv('Datasets\CSV\output_steaam_games.csv', usecols=columns, sep=",", encoding="UTF-8")
+    df = pd.read_csv('CSV\output_steaam_games.csv', usecols=columns, sep=",", encoding="UTF-8")
     df_desarrollador = df[df['developer'] == desarrollador]
 
     # Agrupar los datos por "Año" y contar la cantidad de "item" por año
