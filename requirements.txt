@@ -60,7 +60,7 @@ greenlet==2.0.2
 h11==0.14.0
 httpcore==0.16.3
 httpx==0.23.1
-huggingface-hub==0.18.0
+huggingface-hub==0.16.4
 humanfriendly==10.0
 idna==3.4
 imageio==2.31.3
