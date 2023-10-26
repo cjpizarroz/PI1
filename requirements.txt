@@ -63,7 +63,7 @@ httpx==0.23.1
 huggingface-hub==0.16.4
 humanfriendly==10.0
 idna==3.4
-imageio==2.31.3
+imageio==2.31.2
 importlib-metadata==6.8.0
 inflection==0.5.1
 ipykernel==6.15.0
