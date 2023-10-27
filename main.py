@@ -5,6 +5,7 @@ import pandas as pd
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder 
 import logging
+import gc
 
 
 app = FastAPI()
@@ -25,6 +26,10 @@ def query_data(id):
         df = pd.read_csv('CSV\output_steaam_games.csv', usecols=columns, sep=",", encoding="UTF-8")
         df_desarrollador = df[df['developer'] == desarrollador]
 
+        
+        del df          # libero recursos
+        gc.collect()
+
         # Agrupar los datos por "Año" y contar la cantidad de "item" por año
         item_por_ano = df_desarrollador.groupby('release_date')['item_id'].nunique().reset_index()
         df_consulta = item_por_ano
@@ -34,12 +39,15 @@ def query_data(id):
         item_free_to_play = df_desarrollador.groupby('release_date')['genres_Free to Play'].sum().reset_index()
         df_consulta['Contenido gratis'] = item_free_to_play['genres_Free to Play']/item_por_ano['Cantidad de articulos']
 
+        del desarrollador   # libero recursos
+        gc.collect()
+
         # Formatear la columna 'Porcentaje' como porcentaje
         df_consulta['Contenido gratis'] = df_consulta['Contenido gratis'].apply(lambda x: '{:.2%}'.format(x))
 
         return df_consulta.to_dict(orient='records')
     except Exception as e:
-        return {"errorrrrrrrrrrrrrrr": (e)}
+        return {"error": (e)}
 
 
 
