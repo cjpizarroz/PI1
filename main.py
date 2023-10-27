@@ -44,9 +44,10 @@ def query_data(id):
         # Formatear la columna 'Porcentaje' como porcentaje
         df_consulta['Contenido gratis'] = df_consulta['Contenido gratis'].apply(lambda x: '{:.2%}'.format(x))
 
-        return df_consulta.to_dict(orient='records')
+        #return df_consulta.to_dict(orient='records')
+        return JSONResponse(content=df_consulta)
     except Exception as e:
-        return {"error": (e)}
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
 
 
