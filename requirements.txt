@@ -17,3 +17,4 @@ typing_extensions==4.7.1
 tzdata==2023.3
 unicorn==2.0.1.post1
 uvicorn==0.22.0
+logging==0.4.9.6
