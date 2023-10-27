@@ -4,6 +4,7 @@ from typing import Optional
 import pandas as pd
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder 
+import logging
 
 
 app = FastAPI()
@@ -13,12 +14,16 @@ app = FastAPI()
 # ------ usar 'ebi-hime' como dato para consulta
 @app.get("/get_data")
 async def get_data(id):
-    dataset = query_data(id)  # Realiza la consulta para obtener el conjunto de datos
-    return JSONResponse(content=dataset)
+    try:
+        dataset = query_data(id)  # Realiza la consulta para obtener el conjunto de datos
+        return JSONResponse(content=dataset)
+    except Exception as e:
+        logging.error(f"Error in read_root: {e}")
+        return {"error": "Internal Server Error"}
 
 def query_data(id):
     desarrollador = id
-    #'Poolians.com'
+    #
     columns = ['release_date','item_id', 'developer','genres_Free to Play']
     df = pd.read_csv('CSV\output_steaam_games.csv', usecols=columns, sep=",", encoding="UTF-8")
     df_desarrollador = df[df['developer'] == desarrollador]
