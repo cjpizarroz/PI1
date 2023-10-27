@@ -39,7 +39,7 @@ def query_data(id):
 
         return df_consulta.to_dict(orient='records')
     except Exception as e:
-        return {"error": (e)}
+        return {"errorrrrrrrrrrrrrrr": (e)}
 
 
 
