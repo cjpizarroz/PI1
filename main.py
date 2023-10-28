@@ -52,7 +52,7 @@ def query_data(id):
 
 
 #---------- END POINT NRO 2 --------------
-# ------ usar 'ebi-hime' como dato para consulta
+# ------ usar 'I_DID_911_JUST_SAYING' como dato para consulta
 @app.get("/get_data_ep2/")
 async def endpoints_2_User_id(id):
     dataset = query_data_ep2(id)  # Realiza la consulta para obtener el conjunto de datos
@@ -79,6 +79,41 @@ def query_data_ep2(id):
             "total_juegos": total_juegos
         }
         
+    except Exception as e:
+        return {"error": str(e)}
+    
+
+    #---------- END POINT NRO 3 --------------
+# ------ usar 'genres_Action' como dato para consulta
+@app.get("/get_data_ep3/")
+def UserForGenre(id):
+    dataset = query_data_ep3(id)  # Realiza la consulta para obtener el conjunto de datos
+    return JSONResponse(content=dataset)
+    
+def query_data_ep3(id: str):
+    try:
+        genero = id
+        dataframe = pd.read_csv('CSV//df_ep_3.csv', sep=',', encoding='UTF-8')
+        df_filtrado = dataframe[dataframe[genero] == 1]
+        del dataframe          # libero recursos
+        gc.collect()
+
+        # Paso 2: Encontrar el usuario con más tiempo jugado
+        usuario_mas_tiempo = df_filtrado[df_filtrado["playtime_forever"] == df_filtrado["playtime_forever"].max()]
+        usuario_mas_tiempo = usuario_mas_tiempo[['user_id', 'playtime_forever']]
+        # Paso 3: Agrupar por año y sumar el tiempo jugado
+        acumulacion_por_anio = df_filtrado.groupby("release_date")["playtime_forever"].sum().reset_index()
+
+        # Paso 4: Crear una lista de la acumulación de horas jugadas por año
+        acumulacion_por_anio_list = acumulacion_por_anio.values.tolist()
+        resp_usuario = usuario_mas_tiempo['user_id'].values[0]
+        horas_totales = usuario_mas_tiempo['playtime_forever'].values[0].astype(str)
+
+        return {"Usuario con más tiempo jugado para": genero,
+                "Usuario: ":resp_usuario,
+                "Horas totales jugadas: ":horas_totales
+                #"Acumulación de horas jugadas por año":acumulacion_por_anio_list
+                }
     except Exception as e:
         return {"error": str(e)}
 
