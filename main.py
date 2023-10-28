@@ -94,9 +94,9 @@ async def endpoints_3_UserforGenre(id):
         
     
 def query_data3(id: str):
-    try:
+    #try:
         genero = id
-        dataframe = pd.read_csv('CSV//consulta3.csv', sep=',', encoding='UTF-8')
+        dataframe = pd.read_csv('CSV\\consulta3.csv', sep=',', encoding='UTF-8')
         df_filtrado = dataframe[dataframe[genero] == 1]
         del dataframe          # libero recursos
         gc.collect()
@@ -117,7 +117,7 @@ def query_data3(id: str):
                 "Horas totales jugadas: ":horas_totales,
                 "Acumulación de horas jugadas por año":acumulacion_por_anio_list
                 }
-    except Exception as e:
-        return {"error": str(e)}
+   # except Exception as e:
+      #  return {"error": str(e)}
 
 
