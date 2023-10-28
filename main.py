@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 import pandas as pd
 from fastapi.responses import JSONResponse
+from fastapi import Response
 from fastapi.encoders import jsonable_encoder 
 import logging
 import gc
@@ -86,7 +87,7 @@ def query_data_ep2(id):
     #---------- END POINT NRO 3 --------------
 # ------ usar 'genres_Action' como dato para consulta
 
-@app.get("/get_data/ep3")
+@app.get("/get_dataep3/")
 async def endpoints_3_UserforGenre(id):
     dataset = query_data3(id)  # Realiza la consulta para obtener el conjunto de datos
     return JSONResponse(content=dataset)
