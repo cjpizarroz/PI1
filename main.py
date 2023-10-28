@@ -84,7 +84,7 @@ def query_data_ep2(id):
         return {"error": str(e)}
     
 
-    #---------- END POINT NRO 3 --------------
+#---------- END POINT NRO 3 --------------
 # ------ usar 'genres_Action' como dato para consulta
 
 @app.get("/get_dataep3/")
@@ -98,17 +98,16 @@ def query_data3(id: str):
         genero = id
         dataframe = pd.read_csv('CSV//consulta3.csv', sep=',', encoding='UTF-8')
         df_filtrado = dataframe[dataframe[genero] == 1]
-        
         del dataframe          # libero recursos
         gc.collect()
 
-        # Encontrar el usuario con más tiempo jugado
+        # Paso 2: Encontrar el usuario con más tiempo jugado
         usuario_mas_tiempo = df_filtrado[df_filtrado["playtime_forever"] == df_filtrado["playtime_forever"].max()]
         usuario_mas_tiempo = usuario_mas_tiempo[['user_id', 'playtime_forever']]
-        # Agrupar por año y sumar el tiempo jugado
+        # Paso 3: Agrupar por año y sumar el tiempo jugado
         acumulacion_por_anio = df_filtrado.groupby("release_date")["playtime_forever"].sum().reset_index()
 
-        # Crear una lista de la acumulación de horas jugadas por año
+        # Paso 4: Crear una lista de la acumulación de horas jugadas por año
         acumulacion_por_anio_list = acumulacion_por_anio.values.tolist()
         resp_usuario = usuario_mas_tiempo['user_id'].values[0]
         horas_totales = usuario_mas_tiempo['playtime_forever'].values[0].astype(str)
@@ -120,5 +119,60 @@ def query_data3(id: str):
                 }
     except Exception as e:
         return {"error": str(e)}
+    
+
+
+#---------- END POINT NRO 4 --------------
+# ------ usar '2019' como dato para consulta
+
+@app.get("/get_dataep4/")
+async def endpoints_4_best_developer_year(id):
+    dataset = query_data4(id)  # Realiza la consulta para obtener el conjunto de datos
+    return JSONResponse(content=dataset)
+        
+    
+def query_data4(id: int):
+    try:
+        anio_consulta = id
+        columnas = ['release_date','item_id', 'developer']
+        desarrolladores_df = pd.read_csv('CSV\\output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
+
+        columnas = ['item_id', 'recommend']
+        recomendaciones_df = pd.read_csv('CSV\\australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+
+        # Pasamos a variables dummies el contenido de recommend
+        dummies = pd.get_dummies(recomendaciones_df['recommend'], prefix='recommend')
+        # Concatenar las variables dummies al DataFrame original y eliminar la columna original
+        recomendaciones_df = pd.concat([recomendaciones_df, dummies], axis=1)
+        recomendaciones_df.drop('recommend', axis=1, inplace=True)
+
+        recomendaciones_df.drop(columns='recommend_False', inplace=True)
+
+        recomendaciones_df = recomendaciones_df.rename(columns={'recommend_True': 'recomendacion_positiva'})
+
+        recomendaciones_df['recomendacion_positiva'] = recomendaciones_df['recomendacion_positiva'].astype(int)
+
+        # Filtrar el DataFrame de recomendaciones para el año de consulta
+        desarrollador_anio = desarrolladores_df[desarrolladores_df['release_date'] == anio_consulta]
+
+        # Agrupar y contar las recomendaciones por item_id
+        recomendaciones_contadas = recomendaciones_df.groupby('item_id')['recomendacion_positiva'].sum().reset_index()
+
+        # Unir los DataFrames de desarrolladores y recomendaciones
+        desarrolladores_y_recomendaciones = desarrolladores_df.merge(recomendaciones_contadas, on='item_id', how='left')
+        desarrolladores_y_recomendaciones.drop_duplicates(inplace=True)
+
+        # Ordenar los desarrolladores por el número de recomendaciones en orden descendente
+        desarrolladores_ordenados = desarrolladores_y_recomendaciones.sort_values(by='recomendacion_positiva', ascending=False)
+
+
+        # Obtener los tres desarrolladores con más recomendaciones
+        top_desarrolladores = desarrolladores_ordenados.head(3)
+        
+        return top_desarrolladores.to_dict(orient='records')
+      
+    except Exception as e:
+        return {"error": str(e)}
+
 
 
