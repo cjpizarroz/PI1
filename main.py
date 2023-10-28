@@ -113,8 +113,8 @@ def query_data3(id: str):
 
         return {"Usuario con más tiempo jugado para": genero,
                 "Usuario: ":resp_usuario,
-                "Horas totales jugadas: ":horas_totales
-                #"Acumulación de horas jugadas por año":acumulacion_por_anio_list
+                "Horas totales jugadas: ":horas_totales,
+                "Acumulación de horas jugadas por año":acumulacion_por_anio_list
                 }
     except Exception as e:
         return {"error": str(e)}
