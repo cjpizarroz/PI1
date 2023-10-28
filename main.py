@@ -135,10 +135,10 @@ def query_data4(id: int):
     try:
         anio_consulta = id
         columnas = ['release_date','item_id', 'developer']
-        desarrolladores_df = pd.read_csv('CSV\\output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
+        desarrolladores_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
 
         columnas = ['item_id', 'recommend']
-        recomendaciones_df = pd.read_csv('CSV\\australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+        recomendaciones_df = pd.read_csv('CSV//australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
 
         # Pasamos a variables dummies el contenido de recommend
         dummies = pd.get_dummies(recomendaciones_df['recommend'], prefix='recommend')
