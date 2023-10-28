@@ -85,12 +85,14 @@ def query_data_ep2(id):
 
     #---------- END POINT NRO 3 --------------
 # ------ usar 'genres_Action' como dato para consulta
-@app.get("/get_data_ep3/")
-def UserForGenre(id):
-    dataset = query_data_ep3(id)  # Realiza la consulta para obtener el conjunto de datos
+
+@app.get("/get_data/ep3")
+async def endpoints_3_UserforGenre(id):
+    dataset = query_data3(id)  # Realiza la consulta para obtener el conjunto de datos
     return JSONResponse(content=dataset)
+        
     
-def query_data_ep3(id: str):
+def query_data3(id: str):
     try:
         genero = id
         dataframe = pd.read_csv('CSV//consulta3.csv', sep=',', encoding='UTF-8')
