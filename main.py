@@ -94,20 +94,21 @@ async def endpoints_3_UserforGenre(id):
         
     
 def query_data3(id: str):
-    #try:
+    try:
         genero = id
-        dataframe = pd.read_csv('CSV\\consulta3.csv', sep=',', encoding='UTF-8')
+        dataframe = pd.read_csv('CSV//consulta3.csv', sep=',', encoding='UTF-8')
         df_filtrado = dataframe[dataframe[genero] == 1]
+        
         del dataframe          # libero recursos
         gc.collect()
 
-        # Paso 2: Encontrar el usuario con más tiempo jugado
+        # Encontrar el usuario con más tiempo jugado
         usuario_mas_tiempo = df_filtrado[df_filtrado["playtime_forever"] == df_filtrado["playtime_forever"].max()]
         usuario_mas_tiempo = usuario_mas_tiempo[['user_id', 'playtime_forever']]
-        # Paso 3: Agrupar por año y sumar el tiempo jugado
+        # Agrupar por año y sumar el tiempo jugado
         acumulacion_por_anio = df_filtrado.groupby("release_date")["playtime_forever"].sum().reset_index()
 
-        # Paso 4: Crear una lista de la acumulación de horas jugadas por año
+        # Crear una lista de la acumulación de horas jugadas por año
         acumulacion_por_anio_list = acumulacion_por_anio.values.tolist()
         resp_usuario = usuario_mas_tiempo['user_id'].values[0]
         horas_totales = usuario_mas_tiempo['playtime_forever'].values[0].astype(str)
@@ -117,7 +118,7 @@ def query_data3(id: str):
                 "Horas totales jugadas: ":horas_totales,
                 "Acumulación de horas jugadas por año":acumulacion_por_anio_list
                 }
-   # except Exception as e:
-      #  return {"error": str(e)}
+    except Exception as e:
+        return {"error": str(e)}
 
 
