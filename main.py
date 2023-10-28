@@ -93,7 +93,7 @@ def UserForGenre(id):
 def query_data_ep3(id: str):
     try:
         genero = id
-        dataframe = pd.read_csv('CSV//dfep3.csv', sep=',', encoding='UTF-8')
+        dataframe = pd.read_csv('CSV//consulta3.csv', sep=',', encoding='UTF-8')
         df_filtrado = dataframe[dataframe[genero] == 1]
         del dataframe          # libero recursos
         gc.collect()
