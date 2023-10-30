@@ -145,7 +145,7 @@ def query_data4(id: int):
     try:
         anio_consulta = id
         columnas = ['posted year','item_id', 'recommend']
-        recomendaciones_df = pd.read_csv('CSV\\australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+        recomendaciones_df = pd.read_csv('CSV//australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
         desarrollador_anio = recomendaciones_df[recomendaciones_df['posted year'] == anio_consulta]
         desarrollador_anio = desarrollador_anio.drop(columns=['posted year'])
         
@@ -153,7 +153,7 @@ def query_data4(id: int):
         gc.collect()
 
         columnas = ['item_id', 'developer']
-        desarrolladores_df = pd.read_csv('CSV\\output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
+        desarrolladores_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
         # Unir los DataFrames de desarrolladores y desarrollador_anio
         desarrolladores_y_recomendaciones = desarrolladores_df.merge(desarrollador_anio, on='item_id', how='left')
 
