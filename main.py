@@ -164,7 +164,7 @@ def query_data4(id: int):
         del recomendaciones_df
         gc.collect()
         columnas = ['item_id', 'developer']
-        desarrolladores_df = pd.read_csv('CSV\\output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
+        desarrolladores_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
         
          # Unir los DataFrames de desarrolladores y desarrollador_anio
         desarrolladores_y_recomendaciones = desarrolladores_df.merge(desarrollador_anio, on='item_id', how='left')
