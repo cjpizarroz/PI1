@@ -97,10 +97,10 @@ async def UserforGenre(id):
 def query_data3(genero):
     try:
         ep3_items_columns = ['user_id', 'item_id', 'playtime_forever']
-        df_users_items = pd.read_csv('CSV\\australian_users_items.csv', usecols=ep3_items_columns, sep=',', encoding='UTF-8')
+        df_users_items = pd.read_csv('CSV//australian_users_items.csv', usecols=ep3_items_columns, sep=',', encoding='UTF-8')
 
         ep3_items_columns1 = ['item_id', 'release_date', 'genres_Action', 'genres_Adventure', 'genres_Animation and Modeling']
-        df_steam_games = pd.read_csv('CSV\\output_steaam_games.csv', usecols=ep3_items_columns1, sep=',', encoding='UTF-8')
+        df_steam_games = pd.read_csv('CSV//output_steaam_games.csv', usecols=ep3_items_columns1, sep=',', encoding='UTF-8')
 
         df_merged3 = df_users_items.merge(df_steam_games, on='item_id')
         df_merged3['item_id'] = df_merged3['item_id'].astype(int)
