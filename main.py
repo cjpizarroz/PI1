@@ -149,54 +149,34 @@ async def best_developer_year(id):
 def query_data4(id: int):
     try:
         columnas = ['posted year','item_id', 'recommend']
-        recomendaciones_df = pd.read_csv('CSV\\australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+        recomendaciones_df = pd.read_csv('CSV//australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
 
         recomendaciones_df = recomendaciones_df.dropna(subset=['posted year'])
         recomendaciones_df['posted year'] = recomendaciones_df['posted year'].astype(int)
-
         anio_consulta = id
-        
         desarrollador_anio = recomendaciones_df[recomendaciones_df['posted year'] == anio_consulta]
         desarrollador_anio = desarrollador_anio.drop(columns=['posted year'])
-       
         desarrollador_anio = desarrollador_anio[desarrollador_anio['recommend'] == True]
-
-        del recomendaciones_df
-        gc.collect()
+        # Agrupa por "item_id" y cuenta el número de repeticiones en cada grupo
+        desarrollador_anio['total_recomendaciones'] = desarrollador_anio.groupby('item_id')['item_id'].transform('count')            
+        desarrollador_anio = desarrollador_anio.drop_duplicates()
         columnas = ['item_id', 'developer']
         desarrolladores_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
-        
-         # Unir los DataFrames de desarrolladores y desarrollador_anio
+        # Unir los DataFrames de desarrolladores y desarrollador_anio
         desarrolladores_y_recomendaciones = desarrolladores_df.merge(desarrollador_anio, on='item_id', how='left')
-
-        del desarrolladores_df
-        del desarrollador_anio
-        gc.collect()
-
-        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones.dropna(subset=['recommend'])
-        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones[desarrolladores_y_recomendaciones['recommend'] == True]
-
-        #Agrupaños por developer y sumamos las recomendaciones
-        recomendaciones_contadas = desarrolladores_y_recomendaciones.groupby('developer')['recommend'].sum().reset_index()
-
-        del desarrolladores_y_recomendaciones
-        gc.collect()
-
+        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones.dropna()
         # Ordenar los desarrolladores por el número de recomendaciones en orden descendente
-        desarrolladores_ordenados = recomendaciones_contadas.sort_values(by='recommend', ascending=False)
+        desarrolladores_ordenados = desarrolladores_y_recomendaciones.sort_values(by='total_recomendaciones', ascending=False)
+        # Agrupa por "item_id" y cuenta el número de repeticiones en cada grupo
+        desarrolladores_ordenados['mas_recomendado'] = desarrolladores_ordenados.groupby('developer')['total_recomendaciones'].transform('sum')
+        desarrolladores_ordenados = desarrolladores_ordenados.sort_values(by='mas_recomendado', ascending=False)
+        columnas_quitar = ['item_id','recommend', 'total_recomendaciones']
+        desarrolladores_ordenados = desarrolladores_ordenados.drop(columnas_quitar, axis=1)
+        desarrolladores_ordenados.drop_duplicates(inplace=True)
+        desarrolladores_top = desarrolladores_ordenados.head(3)
+        
 
-        if not desarrolladores_ordenados.empty:
-            nomb_1 = desarrolladores_ordenados.iloc[0, 0]
-            nomb_2 = desarrolladores_ordenados.iloc[1, 0]
-            nomb_3 = desarrolladores_ordenados.iloc[2, 0]
-
-            return  {'Puesto 1: ': nomb_1,
-                     'Puesto 2: ': nomb_2,
-                     'Puesto 3: ': nomb_3
-                    }
-        else:
-            return {"message": "No hay datos disponibles para los tres primeros puestos."}
-
+        return  desarrolladores_top.to_dict(orient='records')
     except Exception as e:
         return {"error": str(e)}
 
