@@ -7,6 +7,7 @@ from fastapi import Response
 from fastapi.encoders import jsonable_encoder 
 import logging
 import gc
+import json
 
 
 app = FastAPI()
@@ -93,40 +94,44 @@ async def UserforGenre(id):
     return JSONResponse(content=dataset)
         
     
-def query_data3(id: str):
+def query_data3(genero):
     try:
-        genero = id
         ep3_items_columns = ['user_id', 'item_id', 'playtime_forever']
-        df_users_items = pd.read_csv('CSV\\australian_users_items.csv',usecols=ep3_items_columns, sep=',', encoding='UTF-8')
+        df_users_items = pd.read_csv('CSV\\australian_users_items.csv', usecols=ep3_items_columns, sep=',', encoding='UTF-8')
 
-        ep3_items_columns1 = ['item_id','release_date','genres_Action', 'genres_Adventure', 'genres_Animation and Modeling']
-        df_steam_games = pd.read_csv('CSV\\output_steaam_games.csv', usecols=ep3_items_columns1, sep=",", encoding="UTF-8")
+        ep3_items_columns1 = ['item_id', 'release_date', 'genres_Action', 'genres_Adventure', 'genres_Animation and Modeling']
+        df_steam_games = pd.read_csv('CSV\\output_steaam_games.csv', usecols=ep3_items_columns1, sep=',', encoding='UTF-8')
 
         df_merged3 = df_users_items.merge(df_steam_games, on='item_id')
+        df_merged3['item_id'] = df_merged3['item_id'].astype(int)
+        df_merged3['release_date'] = df_merged3['release_date'].astype(int)
+        df_merged3['playtime_forever'] = df_merged3['playtime_forever'].astype(int)
+        df_merged3['genres_Action'] = df_merged3['genres_Action'].astype(int)
+        df_merged3['genres_Adventure'] = df_merged3['genres_Adventure'].astype(int)
+        df_merged3['genres_Animation and Modeling'] = df_merged3['genres_Animation and Modeling'].astype(int)
 
-        df_merged3['release_date'] = df_merged3['release_date'].map(int)
-        df_merged3.reset_index(drop=True, inplace=True)
-                               
         df_filtrado = df_merged3[df_merged3[genero] == 1]
-        
-        # Paso 2: Encontrar el usuario con más tiempo jugado
-        usuario_mas_tiempo = df_filtrado[df_filtrado["playtime_forever"] == df_filtrado["playtime_forever"].max()]
-        usuario_mas_tiempo = usuario_mas_tiempo[['user_id', 'playtime_forever']]
 
-        # Paso 3: Agrupar por año y sumar el tiempo jugado
-        acumulacion_por_anio = df_filtrado.groupby("release_date")["playtime_forever"].sum().reset_index()
+        # Agrupa por usuario y suma las horas de juego
+        resumen = df_filtrado.groupby('user_id')['playtime_forever'].sum()
 
-        # Paso 4: Crear una lista de la acumulación de horas jugadas por año
-        acumulacion_por_anio_list = acumulacion_por_anio.values.tolist()
-        resp_usuario = usuario_mas_tiempo['user_id'].values[0]
-        horas_totales = usuario_mas_tiempo['playtime_forever'].values[0]
-       
-       
-        return {"Usuario con más tiempo jugado para": genero,
-                "Usuario: ":resp_usuario,
-                "Horas totales jugadas: ":horas_totales,
-                "Acumulación de horas jugadas por año":acumulacion_por_anio_list
-                }
+        usuario_mas_horas = resumen.idxmax()
+        max_horas_jugadas = resumen.max()
+
+        df1 = df_filtrado[df_filtrado['user_id'] == usuario_mas_horas]
+
+        # Agrupa por usuario y año, y suma las horas de juego
+        resumen = df1.groupby(['user_id', 'release_date'])['playtime_forever'].sum().reset_index()
+
+        # Convierte el resultado en una lista de horas acumuladas por año
+        horas_acumuladas_por_año = []
+        for _, row in resumen.iterrows():
+            horas_acumuladas_por_año.append({"Año": row["release_date"], "Horas": row["playtime_forever"]})
+
+        return {
+            "Usuario con más horas jugadas para Género " + genero: usuario_mas_horas,
+            "Horas jugadas": horas_acumuladas_por_año
+        }
     except Exception as e:
         return {"error": str(e)}
     
@@ -143,60 +148,62 @@ async def best_developer_year(id):
     
 def query_data4(id: int):
     try:
-        anio_consulta = id
         columnas = ['posted year','item_id', 'recommend']
-        recomendaciones_df = pd.read_csv('CSV//australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+        recomendaciones_df = pd.read_csv('CSV\\australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+
+        recomendaciones_df = recomendaciones_df.dropna(subset=['posted year'])
+        recomendaciones_df['posted year'] = recomendaciones_df['posted year'].astype(int)
+
+        anio_consulta = id
+        
         desarrollador_anio = recomendaciones_df[recomendaciones_df['posted year'] == anio_consulta]
         desarrollador_anio = desarrollador_anio.drop(columns=['posted year'])
-        
+       
+        desarrollador_anio = desarrollador_anio[desarrollador_anio['recommend'] == True]
+
         del recomendaciones_df
         gc.collect()
-
         columnas = ['item_id', 'developer']
-        desarrolladores_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
-        # Unir los DataFrames de desarrolladores y desarrollador_anio
+        desarrolladores_df = pd.read_csv('CSV\\output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
+        
+         # Unir los DataFrames de desarrolladores y desarrollador_anio
         desarrolladores_y_recomendaciones = desarrolladores_df.merge(desarrollador_anio, on='item_id', how='left')
 
         del desarrolladores_df
         del desarrollador_anio
         gc.collect()
 
-        # Pasamos a variables dummies el contenido de recommend
-        dummies = pd.get_dummies(desarrolladores_y_recomendaciones['recommend'], prefix='recommend')
-        # Concatenar las variables dummies al DataFrame original y eliminar la columna original
-        desarrolladores_y_recomendaciones = pd.concat([desarrolladores_y_recomendaciones, dummies], axis=1)
-        desarrolladores_y_recomendaciones.drop('recommend', axis=1, inplace=True)
+        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones.dropna(subset=['recommend'])
+        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones[desarrolladores_y_recomendaciones['recommend'] == True]
 
-        desarrolladores_y_recomendaciones.drop(columns='recommend_False', inplace=True)
-
-        desarrolladores_y_recomendaciones['recommend_True'] = desarrolladores_y_recomendaciones['recommend_True'].astype(int)
-        #Eliminamos de desarrolladoresy recomendacion positiva los registros con valores NaN
-        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones.dropna(subset=['recommend_True'])
         #Agrupaños por developer y sumamos las recomendaciones
-        recomendaciones_contadas = desarrolladores_y_recomendaciones.groupby('developer')['recommend_True'].sum().reset_index()
+        recomendaciones_contadas = desarrolladores_y_recomendaciones.groupby('developer')['recommend'].sum().reset_index()
 
         del desarrolladores_y_recomendaciones
         gc.collect()
+
         # Ordenar los desarrolladores por el número de recomendaciones en orden descendente
-        desarrolladores_ordenados = recomendaciones_contadas.sort_values(by='recommend_True', ascending=False)
+        desarrolladores_ordenados = recomendaciones_contadas.sort_values(by='recommend', ascending=False)
 
-        # Seleccionamos los primeros tres con recomendaciones mas elevadas
-        top_desarrolladores = desarrolladores_ordenados.head(3)
-        del desarrolladores_ordenados
-        gc.collect()
+        if not desarrolladores_ordenados.empty:
+            nomb_1 = desarrolladores_ordenados.iloc[0, 0]
+            nomb_2 = desarrolladores_ordenados.iloc[1, 0]
+            nomb_3 = desarrolladores_ordenados.iloc[2, 0]
 
-        primero = top_desarrolladores.iloc[0,0]
-        segundo = top_desarrolladores.iloc[1,0]
-        tercero = top_desarrolladores.iloc[2,0]
+            return  {'Puesto 1: ': nomb_1,
+                     'Puesto 2: ': nomb_2,
+                     'Puesto 3: ': nomb_3
+                    }
+        else:
+            return {"message": "No hay datos disponibles para los tres primeros puestos."}
 
-        return {'Puesto 1: ': primero,
-                'Puesto 2: ': segundo,
-                'Puesto 3: ': tercero
-                
-                }
-      
     except Exception as e:
         return {"error": str(e)}
+
+
+
+
+
 
 
 
