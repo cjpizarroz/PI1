@@ -8,7 +8,7 @@ Este proyecto tiene como objetivo: ser un sistema de recomendación de juegos ef
 El objetivo es impulsar las ventas, proporcionando informacion relevante de los usuarios. Establecer sugerencias de juegos más relevantes, mejorar la satisfacción del usuario, aumentar la participación.
 
 
-Construido con:
+<h2>Construido con:</h2>h2>
 
 pandas
 Phyton
