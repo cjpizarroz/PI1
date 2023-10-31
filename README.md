@@ -6,20 +6,22 @@ Sobre el proyecto
 Basado en datos de Steam, plataforma líder en distribución de juegos para PC.
 Este proyecto tiene como objetivo: ser un sistema de recomendación de juegos eficaz y personalizado utilizando técnicas de análisis de datos y aprendizaje automático. 
 El objetivo es impulsar las ventas, proporcionando informacion relevante de los usuarios. Establecer sugerencias de juegos más relevantes, mejorar la satisfacción del usuario, aumentar la participación.
-( volver arriba )
 
-Construido con
+
+Construido con:
+
 pandas
 Phyton
 PyArrow
 API rápida
-( volver arriba )
+
 
 Empezando
+
 Este es un ejemplo de cómo puede dar instrucciones sobre cómo configurar su proyecto localmente. Para poner en funcionamiento una copia local, siga estos sencillos pasos de ejemplo.
 
-Requisitos previos
-pepita
+Requisitos previos:
+
 pip install requirements.txt
 Instalación
 Clonar el repositorio
@@ -28,14 +30,12 @@ Ejecutar principal.py
 python PI_ML_OPS/app/main.py
 Ingrese su API enlocalhost
 https://localhost:8000
-( volver arriba )
 
 Uso
 Host local FastAPI
 
-( volver arriba )
-
 Metodología de Desarrollo del Sistema de Recomendación:
+
 En el proceso de desarrollo y despliegue de un proyecto, a menudo nos enfrentamos a desafíos técnicos y limitaciones de recursos que pueden influir en las decisiones que tomamos. Una de esas limitaciones a menudo cruciales es la capacidad de la plataforma de renderización (render) que utilizamos para alojar nuestro proyecto.
 
 La "renderización" se refiere al proceso de ejecutar y mostrar una aplicación en un servidor remoto para que los usuarios finales puedan acceder a ella a través de la web. Sin embargo, estas plataformas de renderización pueden tener restricciones en términos de recursos informáticos, como la cantidad de potencia de CPU y memoria RAM disponibles. Estas restricciones pueden llevar a una reducción o "achicamiento" de los datos, lo que significa que debemos optimizar y reducir el tamaño de nuestros recursos, como bases de datos o modelos de machine learning, para que se ajusten a estas limitaciones.
