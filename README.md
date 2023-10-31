@@ -125,10 +125,7 @@ Pruebas y Retroalimentación: Probar el proyecto y proporcionar retroalimentaci�
 Cualquiera que sea la forma en que decidas contribuir, ten en cuenta que tu participación es valiosa y apreciada por la comunidad de código abierto. ¡Gracias por ser parte de esta comunidad increíble!
 
 </h1>Contacto</h1>
-Javier PIzarro [pizarrocarlosjavier@gmail.com]([mailto:pizarrocarlosjavier@gmail.com](https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox)https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox)
-
-
-
+Javier PIzarro: pizarrocarlosjavier@gmail.com
 
 
 
