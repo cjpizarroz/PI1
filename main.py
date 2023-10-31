@@ -247,10 +247,10 @@ def query_data5(id: str):
     try:
         desarrollador = id
         columnas = ['item_id', 'sentiment_analysis']
-        reviews_df = pd.read_csv('CSV\\australian_user_reviews.csv', sep=',', usecols=columnas, encoding='UTF-8')    
+        reviews_df = pd.read_csv('CSV//australian_user_reviews.csv', sep=',', usecols=columnas, encoding='UTF-8')    
 
         columnas = ['item_id', 'developer']
-        desarrollador_df = pd.read_csv('CSV\\output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
+        desarrollador_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
 
         df_merged5 = desarrollador_df.merge(reviews_df, on='item_id')
 
