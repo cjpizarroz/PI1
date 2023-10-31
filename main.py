@@ -22,10 +22,11 @@ async def desarrollador(id):
     
 def query_data(id):
     try:
-        desarrollador = id
-        
+                
         columns = ['release_date','item_id', 'developer','genres_Free to Play']
         df = pd.read_csv('CSV//output_steaam_games.csv', usecols=columns, sep=",", encoding="UTF-8")
+        
+        desarrollador = id
         df_desarrollador = df[df['developer'] == desarrollador]
 
         
@@ -62,7 +63,7 @@ async def userdata(id):
     
 def query_data_ep2(id):
     try:
-        dataframe = pd.read_csv('CSV//df_ep_2.csv', sep=',', encoding='UTF-8')
+        dataframe = pd.read_csv('CSV\\df_ep_2.csv', sep=',', encoding='UTF-8')
         usuario_data = dataframe[dataframe['user_id'] == id]
     
         dinero_gastado = usuario_data['price'].sum()
@@ -148,33 +149,79 @@ async def best_developer_year(id):
     
 def query_data4(id: int):
     try:
+        #Selecciono las columnas a cargar y cargamos el datasets con el archivo csv
         columnas = ['posted year','item_id', 'recommend']
         recomendaciones_df = pd.read_csv('CSV//australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
 
+        #Eliminamos los valores NaN de posted_year
         recomendaciones_df = recomendaciones_df.dropna(subset=['posted year'])
+
+        #Cambiamos a tipo int la variable posted_year
         recomendaciones_df['posted year'] = recomendaciones_df['posted year'].astype(int)
+        
+        #Tomamos el valor de ingreso de la consulta y filtramos el dataset
         anio_consulta = id
         desarrollador_anio = recomendaciones_df[recomendaciones_df['posted year'] == anio_consulta]
+
+        #liberamos recursos
+        del recomendaciones_df
+        gc.collect()
+
+        #eliminamos la columna posted_year
         desarrollador_anio = desarrollador_anio.drop(columns=['posted year'])
+
+        #Filtramos solo los valores True del campo recommend
         desarrollador_anio = desarrollador_anio[desarrollador_anio['recommend'] == True]
+
+
         # Agrupa por "item_id" y cuenta el número de repeticiones en cada grupo
         desarrollador_anio['total_recomendaciones'] = desarrollador_anio.groupby('item_id')['item_id'].transform('count')            
+
+        # eliminamos valores duplicados
         desarrollador_anio = desarrollador_anio.drop_duplicates()
+
+        #Selecciono las columnas a cargar y cargamos el datasets con el archivo csv
         columnas = ['item_id', 'developer']
         desarrolladores_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
+
+
         # Unir los DataFrames de desarrolladores y desarrollador_anio
         desarrolladores_y_recomendaciones = desarrolladores_df.merge(desarrollador_anio, on='item_id', how='left')
+        
+        # liberamos recursos
+        del desarrollador_anio
+        gc.collect
+
+        # eliminamos los registros con NaN
         desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones.dropna()
+
+
         # Ordenar los desarrolladores por el número de recomendaciones en orden descendente
         desarrolladores_ordenados = desarrolladores_y_recomendaciones.sort_values(by='total_recomendaciones', ascending=False)
+        
+        #Liberamos recursos
+        del desarrolladores_y_recomendaciones
+        gc.collect()
+
         # Agrupa por "item_id" y cuenta el número de repeticiones en cada grupo
         desarrolladores_ordenados['mas_recomendado'] = desarrolladores_ordenados.groupby('developer')['total_recomendaciones'].transform('sum')
+
+        # ordenamos el datasets
         desarrolladores_ordenados = desarrolladores_ordenados.sort_values(by='mas_recomendado', ascending=False)
+
+        # eliminamos columnas
         columnas_quitar = ['item_id','recommend', 'total_recomendaciones']
         desarrolladores_ordenados = desarrolladores_ordenados.drop(columnas_quitar, axis=1)
+
+        # eliminamos los duplicados
         desarrolladores_ordenados.drop_duplicates(inplace=True)
+
+        # separamos los primeros tres registros del datasets
         desarrolladores_top = desarrolladores_ordenados.head(3)
         
+        # liberamos recursos
+        del desarrolladores_ordenados
+        gc.collect()
 
         return  desarrolladores_top.to_dict(orient='records')
     except Exception as e:
@@ -223,6 +270,94 @@ def query_data5(id: str):
       
     except Exception as e:
         return {"error": str(e)}
+    
+
+
+    
+#---------- END POINT NRO 6 --------------
+# ------ usar '' como dato para consulta
+
+@app.get("/get_data_ep6/")
+async def ML(id):
+    dataset = query_data6(id)  # Realiza la consulta para obtener el conjunto de datos
+    return JSONResponse(content=dataset)
+        
+    
+def query_data6(id: str):
+    try:
+        import matplotlib.pyplot as plt
+        import numpy as np
+        import seaborn as sns
+        
+        import pandas as pd
+        from keras.models import Sequential
+        from keras.layers import Dense
+        from sklearn.preprocessing import OneHotEncoder
+        from sklearn.model_selection import train_test_split
+        from sklearn.preprocessing import OneHotEncoder
+        from keras.models import Sequential
+        from keras.layers import Dense
+
+        df_merge = pd.read_csv('CSV/df_modelo.csv', sep=',', encoding='UTF-8')
+
+        X = df_merge[['t_recom','t_sent_neg','t_sent_pos']]  # Denotamos X con mayúscula ya que
+                                                             # incluye más de un atributo
+        y = df_merge.title # Etiqueta a predecir
+
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+
+        # Crear un objeto codificador
+        encoder = OneHotEncoder()
+        encoder = OneHotEncoder(handle_unknown='ignore')
+
+
+        # Ajustar y transformar las etiquetas del conjunto de entrenamiento
+        encoded_labels_train = encoder.fit_transform([[label] for label in y_train])
+
+        # Ajustar y transformar las etiquetas del conjunto de prueba
+        encoded_labels_test = encoder.transform([[label] for label in y_test])
+
+        # El resultado será una matriz dispersa (sparse matrix)
+        # Si deseas obtener un array NumPy, puedes hacerlo de la siguiente manera:
+        encoded_labels_train_array = encoded_labels_train.toarray()
+        encoded_labels_test_array = encoded_labels_test.toarray()
+
+
+
+        # Definir la arquitectura del modelo
+        model = Sequential()
+        model.add(Dense(64, input_dim=3, activation='relu'))
+        model.add(Dense(32, activation='relu'))
+        model.add(Dense(2050, activation='softmax'))  # 4 neuronas para las 4 clases
+
+        # Compilar el modelo
+        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+        # Entrenar el modelo
+        model.fit(X_train, encoded_labels_train_array, epochs=3, batch_size=32)
+        # Evaluar el modelo
+        loss, accuracy = model.evaluate(X_test, encoded_labels_test_array)
+
+        new_title_data = df_merge.loc[df_merge['title'] == id, ['t_recom', 't_sent_neg', 't_sent_pos']].values
+        # Realizar la predicción
+        y_pred = model.predict(new_title_data)
+        # Hacer predicciones
+        y_pred = model.predict(X_test)
+
+        # Encuentra el índice del título recomendado en cada fila de y_pred
+        recommended_indices = np.argmax(y_pred, axis=1)
+
+        # Obtiene los nombres correspondientes a los índices
+        recommended_names = [encoder.categories_[0][i] for i in recommended_indices]
+        unique_recommended_names = list(set(recommended_names))
+        
+        return {"Juego: " : id,
+        }
+      
+    except Exception as e:
+        return {"error": str(e)}
+
 
 
 
