@@ -22,11 +22,17 @@ Este es un ejemplo de cómo puede dar instrucciones sobre cómo configurar su pr
 Requisitos previos:
 
 pip install requirements.txt
+
 Instalación
+
 Clonar el repositorio
+
 git clone https://github.com/cjpizarroz/PI1
+
 Ejecutar main.py
+
 Ingrese su API enlocalhost
+
 https://localhost:8000
 
 Uso
