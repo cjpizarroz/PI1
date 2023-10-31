@@ -1,6 +1,6 @@
 
 
-Aprendizaje automático e ingeniería de datos
+*Aprendizaje automático e ingeniería de datos*
 
 Sobre el proyecto
 Basado en datos de Steam, plataforma líder en distribución de juegos para PC.
