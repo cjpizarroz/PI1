@@ -1,6 +1,7 @@
 
 
 Aprendizaje automático e ingeniería de datos
+
 Sobre el proyecto
 Basado en datos de Steam, plataforma líder en distribución de juegos para PC.
 Este proyecto tiene como objetivo: ser un sistema de recomendación de juegos eficaz y personalizado utilizando técnicas de análisis de datos y aprendizaje automático. 
