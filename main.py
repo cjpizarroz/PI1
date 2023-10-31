@@ -285,7 +285,7 @@ async def ML(id):
     
 def query_data6(id: str):
     try:
-        import matplotlib.pyplot as plt
+        
         import numpy as np
         import seaborn as sns
         
