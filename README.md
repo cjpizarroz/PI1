@@ -8,18 +8,18 @@ Este proyecto tiene como objetivo: ser un sistema de recomendación de juegos ef
 El objetivo es impulsar las ventas, proporcionando informacion relevante de los usuarios. Establecer sugerencias de juegos más relevantes, mejorar la satisfacción del usuario, aumentar la participación.
 
 
-<h2>Construido con:</h2>h2>
+<h2>Construido con:</h2>
 
 pandas
 Phyton
 PyArrow
 API rápida
 
-Empezando
+<h2>Empezando</h2>
 
 Este es un ejemplo de cómo puede dar instrucciones sobre cómo configurar su proyecto localmente. Para poner en funcionamiento una copia local, siga estos sencillos pasos de ejemplo.
 
-Requisitos previos:
+<h2>Requisitos previos:</h2>
 
 pip install requirements.txt
 
@@ -35,16 +35,19 @@ Ingrese su API enlocalhost
 
 https://localhost:8000
 
-Uso
+<h2>Uso</h2>
 Host local FastAPI
 
-Metodología de Desarrollo del Sistema de Recomendación:
+<h2>Uso web</h2>
+https://data16-pi1.onrender.com/
+
+<h1>Metodología de Desarrollo del Sistema de Recomendación:</h2>
 
 En el proceso de desarrollo y despliegue de un proyecto, a menudo nos enfrentamos a desafíos técnicos y limitaciones de recursos que pueden influir en las decisiones que tomamos. Una de esas limitaciones a menudo cruciales es la capacidad de la plataforma de renderización (render) que utilizamos para alojar nuestro proyecto.
 
 La "renderización" se refiere al proceso de ejecutar y mostrar una aplicación en un servidor remoto para que los usuarios finales puedan acceder a ella a través de la web. Sin embargo, estas plataformas de renderización pueden tener restricciones en términos de recursos informáticos, como la cantidad de potencia de CPU y memoria RAM disponibles. Estas restricciones pueden llevar a una reducción o "achicamiento" de los datos, lo que significa que debemos optimizar y reducir el tamaño de nuestros recursos, como bases de datos o modelos de machine learning, para que se ajusten a estas limitaciones.
 
-Achicar los datos puede implicar:
+*Achicar los datos puede implicar:*
 
 Reducción de la Granularidad: Eliminar detalles innecesarios o redundantes de los datos para simplificar su estructura.
 
@@ -78,7 +81,7 @@ Se exploraron los datos en profundidad para identificar patrones y tendencias en
 Ingeniería de Características:
 En esta etapa, se crearon nuevas variables a partir de las existentes para mejorar la precisión del modelo. Esto incluyó variables relacionadas con la interacción del usuario con los juegos, la popularidad de los juegos y las estadísticas de los desarrolladores.
 
-Modelado:
+<h1>Modelado:</h1>
 Se implementaron técnicas de aprendizaje automático para desarrollar un modelo capaz de predecir la probabilidad de que un usuario juegue un juego específico. Se utilizaron algoritmos de aprendizaje supervisado, como regresión logística y similitud de cosenos.
 
 Evaluación del Modelo:
@@ -100,7 +103,7 @@ Este enfoque permitirá brindar a los usuarios de Steam recomendaciones de juego
 
 ( volver arriba )
 
-Contribuyendo
+<h1>Contribuyendo</h1>
 Las contribuciones son el alma de la comunidad de código abierto, y cada aporte es valioso y apreciado. Aquí hay varias formas en las que puedes contribuir:
 
 Bifurcación y Solicitud de Extracción (Pull Request): Si tienes una mejora o corrección para el proyecto, bifurca el repositorio principal, realiza tus cambios en tu bifurcación y crea una solicitud de extracción. Esto permite que tus contribuciones se revisen y se integren en el proyecto principal.
@@ -120,6 +123,10 @@ Traducción: Si el proyecto tiene una audiencia internacional, contribuir con tr
 Pruebas y Retroalimentación: Probar el proyecto y proporcionar retroalimentación sobre su usabilidad y cualquier problema que encuentres es otra forma de contribuir.
 
 Cualquiera que sea la forma en que decidas contribuir, ten en cuenta que tu participación es valiosa y apreciada por la comunidad de código abierto. ¡Gracias por ser parte de esta comunidad increíble!
+
+</h1>Contacto</h1>
+Javier PIzarro [pizarrocarlosjavier@gmail.com](mailto:pizarrocarlosjavier@gmail.com)
+
 
 
 
