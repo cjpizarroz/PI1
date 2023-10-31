@@ -15,8 +15,7 @@ Phyton
 PyArrow
 API rápida
 
-
-Empezando
+#Empezando
 
 Este es un ejemplo de cómo puede dar instrucciones sobre cómo configurar su proyecto localmente. Para poner en funcionamiento una copia local, siga estos sencillos pasos de ejemplo.
 
