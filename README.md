@@ -26,8 +26,7 @@ pip install requirements.txt
 Instalación
 Clonar el repositorio
 git clone https://github.com/cjpizarroz/PI1
-Ejecutar principal.py
-python PI_ML_OPS/app/main.py
+Ejecutar main.py
 Ingrese su API enlocalhost
 https://localhost:8000
 
