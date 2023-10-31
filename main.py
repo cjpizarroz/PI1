@@ -63,7 +63,7 @@ async def userdata(id):
     
 def query_data_ep2(id):
     try:
-        dataframe = pd.read_csv('CSV//df_ep_2.csv', sep=',', encoding='UTF-8')
+        dataframe = pd.read_csv(r'CSV//df_ep_2.csv', sep=',', encoding='UTF-8')
         usuario_data = dataframe[dataframe['user_id'] == id]
     
         dinero_gastado = usuario_data['price'].sum()
