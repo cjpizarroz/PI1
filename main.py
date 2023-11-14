@@ -171,7 +171,7 @@ async def best_developer_year(anio):
 def query_data4(anio: int):
     try:
         columnas = ['posted year','item_id', 'recommend']
-        recomendaciones_df = pd.read_csv('CSV\\australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+        recomendaciones_df = pd.read_csv('CSV//australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
         desarrollador_anio = recomendaciones_df[recomendaciones_df['posted year'] == anio]
         desarrollador_anio = desarrollador_anio.drop(columns=['posted year'])
        
