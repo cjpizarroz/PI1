@@ -15,18 +15,24 @@ app = FastAPI()
 
 #---------- END POINT NRO 1 --------------
 # ------ usar 'ebi-hime' como dato para consulta
+
 @app.get("/get_data_ep1/")
-async def desarrollador(id):
-    dataset = query_data(id)  # Realiza la consulta para obtener el conjunto de datos
+async def desarrollador(id_desarrollador: str):  # Agregar anotación de tipo y descripción
+    """
+    ***Esta función devuelve datos según el ID del desarrollador proporcionado***.<br>
+    ***param id_desarrollador:***       El ID del desarrollador para realizar la consulta.<br>
+    ***return:***      Datos consultados correspondientes al ID del desarrollador.
+    """
+    dataset = query_desarrollador(id_desarrollador)  # Realiza la consulta para obtener el conjunto de datos
     return JSONResponse(content=dataset)
     
-def query_data(id):
+def query_desarrollador(id_desarrollador):
     try:
                 
         columns = ['release_date','item_id', 'developer','genres_Free to Play']
         df = pd.read_csv('CSV//output_steaam_games.csv', usecols=columns, sep=",", encoding="UTF-8")
         
-        desarrollador = id
+        desarrollador = id_desarrollador
         df_desarrollador = df[df['developer'] == desarrollador]
 
         
@@ -57,14 +63,19 @@ def query_data(id):
 #---------- END POINT NRO 2 --------------
 # ------ usar 'I_DID_911_JUST_SAYING' como dato para consulta
 @app.get("/get_data_ep2/")
-async def userdata(id):
-    dataset = query_data_ep2(id)  # Realiza la consulta para obtener el conjunto de datos
+async def userdata(User_id):
+    """
+    ***Esta función devuelve datos según el ID del Usuario proporcionado***.<br>
+    ***param User_id:***       El ID del Usuario para realizar la consulta.<br>
+    ***return:***      Datos consultados correspondientes al ID del usuario.
+    """
+    dataset = query_userdata(User_id)  # Realiza la consulta para obtener el conjunto de datos
     return JSONResponse(content=dataset)
     
-def query_data_ep2(id):
+def query_userdata(User_id):
     try:
-        dataframe = pd.read_csv(r'CSV//df_ep_2.csv', sep=',', encoding='UTF-8')
-        usuario_data = dataframe[dataframe['user_id'] == id]
+        dataframe = pd.read_csv('CSV//df_ep_2.csv', sep=',', encoding='UTF-8')
+        usuario_data = dataframe[dataframe['user_id'] == User_id]
     
         dinero_gastado = usuario_data['price'].sum()
     
@@ -91,6 +102,11 @@ def query_data_ep2(id):
 
 @app.get("/get_data_ep3/")
 async def UserforGenre(id):
+    """
+    ***Esta función devuelve datos según el ID del Usuario proporcionado***.<br>
+    ***param User_id:***       El ID del Usuario para realizar la consulta.<br>
+    ***return:***      Datos consultados correspondientes al ID del usuario.
+    """
     dataset = query_data3(id)  # Realiza la consulta para obtener el conjunto de datos
     return JSONResponse(content=dataset)
         
@@ -352,7 +368,7 @@ def query_data6(id: str):
         recommended_names = [encoder.categories_[0][i] for i in recommended_indices]
         unique_recommended_names = list(set(recommended_names))
         
-        return {"Juego: " : id,
+        return {"Juego: " : unique_recommended_names
         }
       
     except Exception as e:
