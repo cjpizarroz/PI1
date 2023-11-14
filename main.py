@@ -211,8 +211,8 @@ def query_data4(anio: int):
         gc.collect()
 
         resultado = top_desarrolladores.to_dict(orient='records')
-        nomb1 = resultado[0,0]
-        return {'puesto 1:': nomb1}
+        
+        return resultado
     except Exception as e:
         return {"error": str(e)}
 
