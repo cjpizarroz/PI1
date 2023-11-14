@@ -101,13 +101,13 @@ def query_userdata(User_id):
 # ------ usar 'genres_Action' como dato para consulta
 
 @app.get("/get_data_ep3/")
-async def UserforGenre(id):
+async def UserforGenre(genero: str):
     """
-    ***Esta función devuelve datos según el ID del Usuario proporcionado***.<br>
-    ***param User_id:***       El ID del Usuario para realizar la consulta.<br>
-    ***return:***      Datos consultados correspondientes al ID del usuario.
+    ***Esta función devuelve datos según el genero del juego proporcionado***.<br>
+    ***param genero:***       El genero del juego para realizar la consulta.<br>
+    ***return:***      Datos consultados correspondientes al genero del juego.
     """
-    dataset = query_data3(id)  # Realiza la consulta para obtener el conjunto de datos
+    dataset = query_data3(genero)  # Realiza la consulta para obtener el conjunto de datos
     return JSONResponse(content=dataset)
         
     
@@ -116,8 +116,7 @@ def query_data3(genero):
         ep3_items_columns = ['user_id', 'item_id', 'playtime_forever']
         df_users_items = pd.read_csv('CSV//australian_users_items.csv', usecols=ep3_items_columns, sep=',', encoding='UTF-8')
 
-        ep3_items_columns1 = ['item_id', 'release_date', 'genres_Action', 'genres_Adventure', 'genres_Animation and Modeling']
-        df_steam_games = pd.read_csv('CSV//output_steaam_games.csv', usecols=ep3_items_columns1, sep=',', encoding='UTF-8')
+        df_steam_games = pd.read_csv('CSV//output_steaam_games.csv', sep=',', encoding='UTF-8')
 
         df_merged3 = df_users_items.merge(df_steam_games, on='item_id')
         df_merged3['item_id'] = df_merged3['item_id'].astype(int)
@@ -126,6 +125,12 @@ def query_data3(genero):
         df_merged3['genres_Action'] = df_merged3['genres_Action'].astype(int)
         df_merged3['genres_Adventure'] = df_merged3['genres_Adventure'].astype(int)
         df_merged3['genres_Animation and Modeling'] = df_merged3['genres_Animation and Modeling'].astype(int)
+        
+        # Verificar qué columnas tienen solo valores de cero
+        zero_columns = df_merged3.columns[df_merged3.eq(0).all()].to_list()
+        
+        # Eliminamos las columnas que solo tienen valores 0
+        df_merged3.drop(columns=zero_columns, inplace=True)
 
         df_filtrado = df_merged3[df_merged3[genero] == 1]
 
@@ -158,88 +163,56 @@ def query_data3(genero):
 # ------ usar '2019' como dato para consulta
 
 @app.get("/get_data_ep4/")
-async def best_developer_year(id):
-    dataset = query_data4(id)  # Realiza la consulta para obtener el conjunto de datos
+async def best_developer_year(anio):
+    dataset = query_data4(anio)  # Realiza la consulta para obtener el conjunto de datos
     return JSONResponse(content=dataset)
         
     
-def query_data4(id: int):
+def query_data4(anio: int):
     try:
-        #Selecciono las columnas a cargar y cargamos el datasets con el archivo csv
         columnas = ['posted year','item_id', 'recommend']
-        recomendaciones_df = pd.read_csv('CSV//australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+        recomendaciones_df = pd.read_csv('CSV\\australian_user_reviews.csv', usecols=columnas, sep=',', encoding='UTF-8')
+        desarrollador_anio = recomendaciones_df[recomendaciones_df['posted year'] == anio]
+        desarrollador_anio = desarrollador_anio.drop(columns=['posted year'])
+       
+        desarrollador_anio = desarrollador_anio[desarrollador_anio['recommend'] == True]
 
-        #Eliminamos los valores NaN de posted_year
-        recomendaciones_df = recomendaciones_df.dropna(subset=['posted year'])
+        # Agrupa por "item_id" y cuenta el número de repeticiones en cada grupo
+        desarrollador_anio['total_repeticiones'] = desarrollador_anio.groupby('item_id')['item_id'].transform('count')
 
-        #Cambiamos a tipo int la variable posted_year
-        recomendaciones_df['posted year'] = recomendaciones_df['posted year'].astype(int)
-        
-        #Tomamos el valor de ingreso de la consulta y filtramos el dataset
-        anio_consulta = id
-        desarrollador_anio = recomendaciones_df[recomendaciones_df['posted year'] == anio_consulta]
-
-        #liberamos recursos
         del recomendaciones_df
         gc.collect()
 
-        #eliminamos la columna posted_year
-        desarrollador_anio = desarrollador_anio.drop(columns=['posted year'])
 
-        #Filtramos solo los valores True del campo recommend
-        desarrollador_anio = desarrollador_anio[desarrollador_anio['recommend'] == True]
-
-
-        # Agrupa por "item_id" y cuenta el número de repeticiones en cada grupo
-        desarrollador_anio['total_recomendaciones'] = desarrollador_anio.groupby('item_id')['item_id'].transform('count')            
-
-        # eliminamos valores duplicados
-        desarrollador_anio = desarrollador_anio.drop_duplicates()
-
-        #Selecciono las columnas a cargar y cargamos el datasets con el archivo csv
         columnas = ['item_id', 'developer']
         desarrolladores_df = pd.read_csv('CSV//output_steaam_games.csv', sep=',', usecols=columnas, encoding='UTF-8')
-
-
-        # Unir los DataFrames de desarrolladores y desarrollador_anio
+        
+         # Unir los DataFrames de desarrolladores y desarrollador_anio
         desarrolladores_y_recomendaciones = desarrolladores_df.merge(desarrollador_anio, on='item_id', how='left')
-        
-        # liberamos recursos
+
+        del desarrolladores_df
         del desarrollador_anio
-        gc.collect
+        gc.collect()
 
-        # eliminamos los registros con NaN
-        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones.dropna()
+        desarrolladores_y_recomendaciones = desarrolladores_y_recomendaciones[desarrolladores_y_recomendaciones['recommend'] == True]
 
+        #Agrupaños por developer y sumamos las recomendaciones
+        recomendaciones_contadas = desarrolladores_y_recomendaciones.groupby('developer')['recommend'].sum().reset_index()
 
-        # Ordenar los desarrolladores por el número de recomendaciones en orden descendente
-        desarrolladores_ordenados = desarrolladores_y_recomendaciones.sort_values(by='total_recomendaciones', ascending=False)
-        
-        #Liberamos recursos
         del desarrolladores_y_recomendaciones
         gc.collect()
 
-        # Agrupa por "item_id" y cuenta el número de repeticiones en cada grupo
-        desarrolladores_ordenados['mas_recomendado'] = desarrolladores_ordenados.groupby('developer')['total_recomendaciones'].transform('sum')
+        # Ordenar los desarrolladores por el número de recomendaciones en orden descendente
+        desarrolladores_ordenados = recomendaciones_contadas.sort_values(by='recommend', ascending=False)
 
-        # ordenamos el datasets
-        desarrolladores_ordenados = desarrolladores_ordenados.sort_values(by='mas_recomendado', ascending=False)
-
-        # eliminamos columnas
-        columnas_quitar = ['item_id','recommend', 'total_recomendaciones']
-        desarrolladores_ordenados = desarrolladores_ordenados.drop(columnas_quitar, axis=1)
-
-        # eliminamos los duplicados
-        desarrolladores_ordenados.drop_duplicates(inplace=True)
-
-        # separamos los primeros tres registros del datasets
-        desarrolladores_top = desarrolladores_ordenados.head(3)
-        
-        # liberamos recursos
+        # Seleccionamos los primeros tres con recomendaciones mas elevadas
+        top_desarrolladores = desarrolladores_ordenados.head(3)
         del desarrolladores_ordenados
         gc.collect()
 
-        return  desarrolladores_top.to_dict(orient='records')
+        resultado = top_desarrolladores.to_dict(orient='records')
+        nomb1 = resultado[0,0]
+        return {'puesto 1:': nomb1}
     except Exception as e:
         return {"error": str(e)}
 
